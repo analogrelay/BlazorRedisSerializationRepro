@@ -1,0 +1,30 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR
+@inject IHubContext<TestHub> TestHubContext
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<button @onclick="Button_Click">Send a message</button>
+
+@if(!string.IsNullOrEmpty(ErrorContent))
+{
+    <p style="color: red">@ErrorContent</p>
+}
+
+@code {
+    private string ErrorContent { get; set; }
+
+    private async Task Button_Click(MouseEventArgs e)
+    {
+        // This shouldn't throw
+        try
+        {
+            await TestHubContext.Clients.All.SendAsync("ReceiveMessage", new MyMessage() { Content = "Foo" });
+        } catch(Exception ex)
+        {
+            ErrorContent = ex.ToString();
+        }
+    }
+}
